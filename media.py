@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-import os, sys, bashic
+import os, sys, bashic, vidivarium
 
 
 def video2images(original_video, frame_rate):
@@ -8,7 +8,7 @@ def video2images(original_video, frame_rate):
     cmd = 'p=$PWD;cd '+name+'; ffmpeg -i $p/Video/' + original_video + ' ' + name + \
           '%d.png -vf fps=' + str(frame_rate)
     os.system(cmd+'; clear')
-    print '\033[1m\033[34m' + original_video+'Converted To:'+'\033[0m'
+    print '\033[1m\033[34m' + original_video+' Converted To:'+'\033[0m'
     os.system('ls '+name)
     return name
 
@@ -100,6 +100,14 @@ def main():
         if 'slowmo' in sys.argv:
             video.slow_motion(5)
 
+        if 'expose' in sys.argv:
+            vidivarium.time_evolving_exposure_inversion(video.data,
+                                                        video.frame_rate,
+                                                        video.label,
+                                                        depth=4)
+            # frame = video.data[23]
+            # vidivarium.explore(frame[:,:,1])
+        print "Finished."
         # When finished clean up the whole directory of images
         cleanup(name)
 
