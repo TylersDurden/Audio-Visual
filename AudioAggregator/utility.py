@@ -47,3 +47,10 @@ def sec_to_h_m_s(seconds):
         min = (float(seconds)/float(3600)-int(hours))*60
         print str(int(hours)) + " hours and " + str(int(min))+" mins"
     return [hours, min]
+
+
+def reveal_dict(structure, handle):
+    print '|================|'+str(handle)+'|================|'
+    for key in structure.keys():
+        for attr in structure[key]:
+            print str(key)+" = " + attr + str(type(structure[key][attr]))
