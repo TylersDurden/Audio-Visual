@@ -28,6 +28,8 @@ def expose(image, filter_name):
     filt = filters[filter_name]
     dims = np.array(image).shape
     imat = np.array(image).flatten()
+    # f, ax = plt.subplots(1, 2)
+    # ax[0].imshow(np.array(image), 'gray_r')
     ii = 0
     for cell in ndi.convolve(image,f0).flatten():
         if cell > 3*imat[ii]:
@@ -37,12 +39,8 @@ def expose(image, filter_name):
 
 
 def explore(image):
-    # f, ax = plt.subplots(1, 2)
-    # ax[0].imshow(np.array(image), 'gray_r')
     dims = np.array(image).shape
     data = np.array(image).flatten()
-    # maxima = np.array(image).max()
-    # minima = np.array(image).min()
     average = np.array(image).mean()
     ii = 0
     for cell in image.flatten():
