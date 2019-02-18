@@ -84,11 +84,11 @@ def main():
     img_path_1 = '../TheGuardiansOfTomorrow/home.jpg'
     img_path_2 = 'Images/fruit-stand.jpg'
 
-    test_image = np.array(plt.imread(img_path_2))
-    print "Shape: " + str(test_image.shape)
-    print "Min: " + str(test_image.min())
-    print "Max: " + str(test_image.max())
-    print "Avg: " + str(test_image.mean())
+    test_image = np.array(plt.imread(img_path))
+    # print "Shape: " + str(test_image.shape)
+    # print "Min: " + str(test_image.min())
+    # print "Max: " + str(test_image.max())
+    # print "Avg: " + str(test_image.mean())
 
     # binarize(test_image)
 

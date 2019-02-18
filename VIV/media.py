@@ -1,12 +1,12 @@
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt, numpy as np
 import os, sys, bashic, vidivarium
-
+import scipy.ndimage as ndi, time
 
 def video2images(original_video, frame_rate):
     name = original_video.split('.')[0]
     os.system('mkdir '+name)
-    cmd = 'p=$PWD;cd '+name+'; ffmpeg -i $p/Video/' + original_video + ' ' + name + \
-          '%d.png -vf fps=' + str(frame_rate)
+    cmd = 'p=$PWD; ffmpeg -i ../Video/' + original_video + ' ' + name + \
+          '/%d.png -vf fps=' + str(frame_rate)
     os.system(cmd+'; clear')
     print '\033[1m\033[34m' + original_video+' Converted To:'+'\033[0m'
     os.system('ls '+name)
@@ -61,14 +61,14 @@ class VideoEntity:
             print "Dimensions: " + str(self.dimensions)
             print "Num Frames: " + str(self.n_frames)
 
-    def show(self):
+    def show(self, isBW):
         """
         Render Image data
         :return:
         """
-        if len(self.dimensions) > 2:
+        if not isBW and len(self.dimensions) > 2:
             bashic.render_color(self.data, self.frame_rate)
-        else:
+        elif isBW:
             bashic.render_bw(self.data, self.frame_rate)
 
     def slow_motion(self, N):
@@ -84,10 +84,51 @@ class VideoEntity:
             for i in range(N):
                 new_data.append(frame)
         self.data = new_data
-        self.show()
+        self.show(False)
+
+    @staticmethod
+    def fs_error_diffusion(state, weight):
+        kern = [[3,3,1],
+                [5,2,3],
+                [3,5,1]]
+
+        k = [[2,2,2,2,2],
+             [2,1,3,1,2],
+             [2,3,5,3,2],
+             [2,1,3,1,2],
+             [2,2,2,2,2]]
+
+        return(ndi.convolve(np.array(state), np.array(k)))/weight - state
+
+    def binarize(self, extra):
+        new_film = []
+        for frame in self.data:
+            if extra:
+                new_film.append(self.hollywood(frame[:,:,0]/2+frame[:,:,2]/2+frame[:,:,1]/2,3))
+                next_frame = self.hollywood(frame[:,:,0]/3+frame[:,:,2]/3+frame[:,:,1]/3, 3)
+                new_film.append(8*next_frame + frame[:,:,0]/3)
+            else:
+                filtered_frame = frame[:, :, 2] + frame[:, :, 1] / 4 + \
+                                 frame[:, :, 0] / (1 + self.fs_error_diffusion(frame[:, :, 0], 12))
+                new_film.append(filtered_frame)
+        print new_film.pop().shape
+        self.data = new_film
+
+    def hollywood(self, state, level):
+        k = [[1,1,1],[1,0,1],[1,1,1]]
+        new_state = np.array(state).flatten()
+        ii = 0
+        for cell in ndi.convolve(state,k).flatten():
+            if cell >= level:
+                new_state[ii] += 1.5
+            else:
+                new_state[ii] -= 1
+            ii += 1
+        return new_state.reshape(state.shape)
 
 
 def main():
+    t0 = time.time()
     # Convert a video to a bunch of images
     if '-demo' in sys.argv:
         test = 'tre.mp4'
@@ -110,6 +151,29 @@ def main():
         print "Finished."
         # When finished clean up the whole directory of images
         cleanup(name)
+        exit(0)
+
+    elif len(sys.argv) > 1:
+        video_file = sys.argv[1]
+        vdata = video2images(video_file, 25)
+        images = find_files(vdata)
+
+        # Virtualize the entire video for processing
+        video = VideoEntity(video_file, images, 25, True)
+        if '-b' not in sys.argv:
+            video.binarize(False)
+            # When finished clean up the whole directory of images
+            cleanup(vdata)
+            print '\033[1m\033[31m[' + str(time.time() - t0) + 's Elapsed]\033[0m'
+            video.show(False)
+            exit(0)
+        else:
+            video.binarize(True)
+            print '\033[1m\033[31m['+str(time.time()-t0)+'s Elapsed]\033[0m'
+            # When finished clean up the whole directory of images
+            cleanup(vdata)
+            video.show(True)
+            exit(0)
 
 
 if __name__ == '__main__':

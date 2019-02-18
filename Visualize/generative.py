@@ -27,9 +27,9 @@ class Kernel:
         for i in range(len(self.seeds)):
             c = random_seed[largest.pop()]
             # ksum = np.array(self.seeds[i]).sum()
+            # csum = np.array(c).sum()
             # cycle = np.random.random_integers(0, 1, self.seeds[i].shape[0]*self.seeds[i].shape[1])
             # c = cycle.reshape(self.seeds[i].shape)
-            # csum = np.array(c).sum()
             permute.append(c)
             # img = ndi.convolve(self.seeds[i], c) + c
             # frames.append([plt.imshow(self.seeds[i], 'gray_r')])

@@ -24,6 +24,6 @@ def render_bw(image_data, frame_rate):
     f = plt.figure()
     film = []
     for frame in image_data:
-        film.append([plt.imshow(frame, 'gray_r')])
+        film.append([plt.imshow(frame, 'gray')])
     a = animation.ArtistAnimation(f, film, frame_rate, blit=True, repeat_delay=900)
     plt.show()
