@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt, matplotlib.animation as animation
+from matplotlib.animation import FFMpegWriter
 import os
 
 
@@ -20,10 +21,13 @@ def render_color(image_data, frame_rate):
     plt.show()
 
 
-def render_bw(image_data, frame_rate):
+def render_bw(image_data, frame_rate, save, fname):
     f = plt.figure()
     film = []
     for frame in image_data:
         film.append([plt.imshow(frame, 'gray')])
     a = animation.ArtistAnimation(f, film, frame_rate, blit=True, repeat_delay=900)
+    if save:
+        writer = FFMpegWriter(fps=frame_rate, metadata=dict(artist='m3:D'),bitrate=1800)
+        a.save(fname, writer=writer)
     plt.show()

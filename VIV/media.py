@@ -61,7 +61,7 @@ class VideoEntity:
             print "Dimensions: " + str(self.dimensions)
             print "Num Frames: " + str(self.n_frames)
 
-    def show(self, isBW):
+    def show(self, isBW, save, file_name):
         """
         Render Image data
         :return:
@@ -69,7 +69,7 @@ class VideoEntity:
         if not isBW and len(self.dimensions) > 2:
             bashic.render_color(self.data, self.frame_rate)
         elif isBW:
-            bashic.render_bw(self.data, self.frame_rate)
+            bashic.render_bw(self.data, self.frame_rate,save, file_name)
 
     def slow_motion(self, N):
         """
@@ -84,7 +84,7 @@ class VideoEntity:
             for i in range(N):
                 new_data.append(frame)
         self.data = new_data
-        self.show(False)
+        self.show(False, False, '')
 
     @staticmethod
     def fs_error_diffusion(state, weight):
@@ -104,7 +104,6 @@ class VideoEntity:
         new_film = []
         for frame in self.data:
             if extra:
-                new_film.append(self.hollywood(frame[:,:,0]/2+frame[:,:,2]/2+frame[:,:,1]/2,3))
                 next_frame = self.hollywood(frame[:,:,0]/3+frame[:,:,2]/3+frame[:,:,1]/3, 3)
                 new_film.append(8*next_frame + frame[:,:,0]/3)
             else:
@@ -120,7 +119,7 @@ class VideoEntity:
         ii = 0
         for cell in ndi.convolve(state,k).flatten():
             if cell >= level:
-                new_state[ii] += 1.5
+                new_state[ii] += 2
             else:
                 new_state[ii] -= 1
             ii += 1
@@ -158,21 +157,21 @@ def main():
         vdata = video2images(video_file, 25)
         images = find_files(vdata)
 
-        # Virtualize the entire video for processing
+        # Instantiate the entire video for processing
         video = VideoEntity(video_file, images, 25, True)
         if '-b' not in sys.argv:
             video.binarize(False)
             # When finished clean up the whole directory of images
             cleanup(vdata)
             print '\033[1m\033[31m[' + str(time.time() - t0) + 's Elapsed]\033[0m'
-            video.show(False)
+            video.show(True, True, 'special_fx_tre.mp4')
             exit(0)
         else:
             video.binarize(True)
             print '\033[1m\033[31m['+str(time.time()-t0)+'s Elapsed]\033[0m'
             # When finished clean up the whole directory of images
             cleanup(vdata)
-            video.show(True)
+            video.show(True,True, 'light_filter_tre.mp4')
             exit(0)
 
 
