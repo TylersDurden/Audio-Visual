@@ -131,11 +131,11 @@ def main():
     # Convert a video to a bunch of images
     if '-demo' in sys.argv:
         test = 'tre.mp4'
-        name = video2images(test, 25)
+        name = video2images(test, 30)
         image_data = find_files(name)
 
         # Virtualizing the image data for recreating video, but with effects
-        video = VideoEntity(test, image_data, 25, True)
+        video = VideoEntity(test, image_data, 30, True)
 
         if 'slowmo' in sys.argv:
             video.slow_motion(5)
@@ -154,24 +154,24 @@ def main():
 
     elif len(sys.argv) > 1:
         video_file = sys.argv[1]
-        vdata = video2images(video_file, 25)
+        vdata = video2images(video_file, 45)
         images = find_files(vdata)
 
         # Instantiate the entire video for processing
-        video = VideoEntity(video_file, images, 25, True)
+        video = VideoEntity(video_file, images, 30, True)
         if '-b' not in sys.argv:
             video.binarize(False)
             # When finished clean up the whole directory of images
             cleanup(vdata)
             print '\033[1m\033[31m[' + str(time.time() - t0) + 's Elapsed]\033[0m'
-            video.show(True, True, 'special_fx_tre.mp4')
+            video.show(True, True, 'special_fx_'+video_file)
             exit(0)
         else:
             video.binarize(True)
             print '\033[1m\033[31m['+str(time.time()-t0)+'s Elapsed]\033[0m'
             # When finished clean up the whole directory of images
             cleanup(vdata)
-            video.show(True,True, 'light_filter_tre.mp4')
+            video.show(True,True, 'light_filter_'+video_file)
             exit(0)
 
 
