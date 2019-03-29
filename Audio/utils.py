@@ -24,7 +24,7 @@ def load_wav(file_name):
 
 def load_mp3(file_name):
     name = file_name.split('.')[0].split('/')[len(file_name.split('.')[0].split('/'))-1]+'.wav'
-    os.system('ffmpeg -i '+file_name+' ' +name)
+    os.system('ffmpeg -i '+file_name+' ' +name)     # TODO: maybe make output invisible and clear after?
     song = {}
     try:
         sample_rate, raw_data = wavfile.read(name)
@@ -38,7 +38,7 @@ def load_mp3(file_name):
 
 
 def find_wavs(verbose):
-    locate = 'locate *.wav >> command.txt'
+    locate = 'locate .wav >> command.txt'
     os.system(locate)
     songs = swap('command.txt', True)
     if verbose:
